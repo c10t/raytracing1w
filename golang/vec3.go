@@ -27,3 +27,7 @@ func Sub(v Vec3, w Vec3) Vec3 {
 func (v Vec3) Scale(t float64) Vec3 {
 	return Vec3{v.X * t, v.Y * t, v.Z * t}
 }
+
+func (v Vec3) Add(w Vec3) Vec3 {
+	return Vec3{v.X + w.X, v.Y + w.Y, v.Z + w.Z}
+}

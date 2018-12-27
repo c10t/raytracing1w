@@ -42,3 +42,11 @@ func TestScale(t *testing.T) {
 		t.Fatalf("-1.5 * (1, -1, 0) != (-1.5, 1.5, 0): (%v, %v, %v)", w.X, w.Y, w.Z)
 	}
 }
+
+func TestAddMethod(t *testing.T) {
+	v := Vec3{X: 1.5, Y: -0.2, Z: -1}
+	w := v.Add(UnitVector)
+	if w.X != 2.5 || w.Y != 0.8 || w.Z != 0 {
+		t.Fatalf("(1.5,-0.2,-1) + (1,1,1) != (2.5,0.8,0): (%v,%v,%v)", w.X, w.Y, w.Z)
+	}
+}
