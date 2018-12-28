@@ -37,6 +37,6 @@ func (s *Sphere) Hit(r Ray, tmin float64, tmax float64) (bool, HitRecord) {
 	return false, HitRecord{}
 }
 
-func NewSphere(x, y, z, r float64) Sphere {
-	return Sphere{Center: Vec3{X: x, Y: y, Z: z}, Radius: r}
+func NewSphere(x, y, z, r float64) *Sphere {
+	return &Sphere{Center: Vec3{X: x, Y: y, Z: z}, Radius: r}
 }
