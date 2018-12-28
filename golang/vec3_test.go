@@ -43,6 +43,14 @@ func TestScale(t *testing.T) {
 	}
 }
 
+func TestShrink(t *testing.T) {
+	v := Vec3{X: 3, Y: -3, Z: 0}
+	w := v.Shrink(-1.5)
+	if w.X != -2 || w.Y != 2 || w.Z != 0 {
+		t.Fatalf("(3, -3, 0) / (-1.5) != (-2, 2, 0): (%v, %v, %v)", w.X, w.Y, w.Z)
+	}
+}
+
 func TestAddMethod(t *testing.T) {
 	v := Vec3{X: 1.5, Y: -0.2, Z: -1}
 	w := v.Add(UnitVector)
