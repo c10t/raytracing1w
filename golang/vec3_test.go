@@ -19,6 +19,8 @@ func TestSquaredLength(t *testing.T) {
 	}
 }
 
+func TestUnitVector(t *testing.T) {}
+
 func TestAdd(t *testing.T) {
 	v := Vec3{X: 1.5, Y: -0.2, Z: -1}
 	w := Add(v, UnitVector)
@@ -32,6 +34,14 @@ func TestSub(t *testing.T) {
 	w := Sub(v, UnitVector)
 	if w.X != -0.5 || w.Y != 0 || w.Z != 0.7 {
 		t.Fatalf("(0.5, 1, 1.7) - (1, 1, 1) != (-0.5, 0, 0.7)")
+	}
+}
+
+func TestSlide(t *testing.T) {
+	v := Vec3{X: 1, Y: -1, Z: 0}
+	w := v.Slide(-1)
+	if w.X != 0 || w.Y != -2 || w.Z != -1 {
+		t.Fatalf("(1, -1, 0) + (-1) != (0, -2, -1): (%v, %v, %v)", w.X, w.Y, w.Z)
 	}
 }
 
