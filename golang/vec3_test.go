@@ -50,3 +50,19 @@ func TestAddMethod(t *testing.T) {
 		t.Fatalf("(1.5,-0.2,-1) + (1,1,1) != (2.5,0.8,0): (%v,%v,%v)", w.X, w.Y, w.Z)
 	}
 }
+
+func TestSubMethod(t *testing.T) {
+	v := Vec3{X: -1.5, Y: 0.2, Z: 1}
+	w := v.Sub(UnitVector)
+	if w.X != -2.5 || w.Y != -0.8 || w.Z != 0 {
+		t.Fatalf("(-1.5,0.2,1) - (1,1,1) != (-2.5,-0.8,0): (%v,%v,%v)", w.X, w.Y, w.Z)
+	}
+}
+
+func TestDot(t *testing.T) {
+	v := Vec3{X: -1, Y: 2, Z: 3}
+	w := Vec3{X: 4, Y: 5, Z: 0}
+	if d := Dot(v, w); d != 6 {
+		t.Fatalf("(-1,2,3) . (4,5,0) != 6 %v", d)
+	}
+}
