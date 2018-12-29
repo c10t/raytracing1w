@@ -1,21 +1,32 @@
 package main
 
 import (
+	"bufio"
 	"fmt"
 	"log"
 	"math"
+	"os"
 	"time"
 )
 
 func main() {
 	const timeLayout = "20060102-1504-05"
 	t := time.Now()
-	filename := t.Format(timeLayout)
-	log.Println(fmt.Sprintf("Writing to %v.ppm ...", filename))
+	filename := t.Format(timeLayout) + ".ppm"
+	log.Println(fmt.Sprintf("Writing to %v ...", filename))
 
-	// for _, line := range lerp(200, 100) {
-	//   fmt.Println(line)
-	// }
+	file, err := os.OpenFile(filename, os.O_RDWR|os.O_CREATE|os.O_APPEND, 0666)
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer file.Close()
+
+	writer := bufio.NewWriter(file)
+
+	for _, line := range lerp(200, 100) {
+		writer.WriteString(line + "\n")
+	}
+	writer.Flush()
 }
 
 func color(r *Ray, w *World) Vec3 {
