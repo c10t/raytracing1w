@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 	"math"
+	"math/rand"
 	"os"
 	"time"
 )
@@ -23,7 +24,7 @@ func main() {
 
 	writer := bufio.NewWriter(file)
 
-	for _, line := range lerp(200, 100) {
+	for _, line := range lerp(200, 100, 100, time.Now().UnixNano()) {
 		writer.WriteString(line + "\n")
 	}
 	writer.Flush()
@@ -42,28 +43,31 @@ func color(r *Ray, w *World) Vec3 {
 	return Add(v1.Scale(1-t), v2.Scale(t))
 }
 
-func lerp(nx, ny int) []string {
-	result := []string{"P3", fmt.Sprintf("%d %d", nx, ny), "255"}
+func lerp(nx, ny, ns int, seed int64) []string {
+	rand.Seed(seed)
 
-	lowerLeftCorner := Vec3{-2, -1, -1}
-	horizontal := Vec3{4, 0, 0}
-	vertical := Vec3{0, 2, 0}
-	origin := Vec3{0, 0, 0}
+	result := []string{"P3", fmt.Sprintf("%d %d", nx, ny), "255"}
 
 	s1 := NewSphere(0, 0, -1, 0.5)
 	s2 := NewSphere(0, -100.5, -1, 100)
 	world := World{s1, s2}
 
+	cam := NewCamera()
+
 	for j := ny - 1; j > -1; j-- {
 		for i := 0; i < nx; i++ {
-			u := float64(i) / float64(nx)
-			v := float64(j) / float64(ny)
-			d := lowerLeftCorner.Add(horizontal.Scale(u)).Add(vertical.Scale(v))
-			r := Ray{Origin: origin, Direction: d}
-			c := color(&r, &world)
-			ir := int(255.99 * c.X)
-			ig := int(255.99 * c.Y)
-			ib := int(255.99 * c.Z)
+			col := Vec3{0, 0, 0}
+			for s := 0; s < ns; s++ {
+				u := (float64(i) + rand.Float64()) / float64(nx)
+				v := (float64(j) + rand.Float64()) / float64(ny)
+				r := cam.GetRay(u, v)
+				col = col.Add(color(&r, &world))
+			}
+			col = col.Shrink(float64(ns))
+
+			ir := int(255.99 * col.X)
+			ig := int(255.99 * col.Y)
+			ib := int(255.99 * col.Z)
 			result = append(result, fmt.Sprintf("%d %d %d", ir, ig, ib))
 		}
 	}
