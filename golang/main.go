@@ -43,7 +43,7 @@ func randomInUnitSphere() Vec3 {
 }
 
 func color(r *Ray, w *World) Vec3 {
-	hit, rec := w.Hit(*r, 0, math.MaxFloat64)
+	hit, rec := w.Hit(*r, 0.001, math.MaxFloat64)
 	if hit {
 		target := Add(rec.Point, rec.Normal).Add(randomInUnitSphere())
 		newray := Ray{Origin: rec.Point, Direction: target.Sub(rec.Point)}
@@ -77,9 +77,9 @@ func lerp(nx, ny, ns int) []string {
 			}
 			col = col.Shrink(float64(ns))
 
-			ir := int(255.99 * col.X)
-			ig := int(255.99 * col.Y)
-			ib := int(255.99 * col.Z)
+			ir := int(255.99 * math.Sqrt(col.X))
+			ig := int(255.99 * math.Sqrt(col.Y))
+			ib := int(255.99 * math.Sqrt(col.Z))
 			result = append(result, fmt.Sprintf("%d %d %d", ir, ig, ib))
 		}
 	}
