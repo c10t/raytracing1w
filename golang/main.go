@@ -24,16 +24,30 @@ func main() {
 
 	writer := bufio.NewWriter(file)
 
-	for _, line := range lerp(200, 100, 100, time.Now().UnixNano()) {
+	rand.Seed(time.Now().UnixNano())
+	for _, line := range lerp(200, 100, 100) {
 		writer.WriteString(line + "\n")
 	}
 	writer.Flush()
 }
 
+func randomInUnitSphere() Vec3 {
+	var p = Vec3{1, 1, 1}
+	for p.SquaredLength() >= 1.0 {
+		p.X = 2*rand.Float64() - 1
+		p.Y = 2*rand.Float64() - 1
+		p.Z = 2*rand.Float64() - 1
+	}
+
+	return p
+}
+
 func color(r *Ray, w *World) Vec3 {
 	hit, rec := w.Hit(*r, 0, math.MaxFloat64)
 	if hit {
-		return rec.Normal.Slide(1).Scale(0.5)
+		target := Add(rec.Point, rec.Normal).Add(randomInUnitSphere())
+		newray := Ray{Origin: rec.Point, Direction: target.Sub(rec.Point)}
+		return color(&newray, w).Scale(0.5)
 	}
 
 	unitDirection := r.Direction.UnitVector()
@@ -43,9 +57,7 @@ func color(r *Ray, w *World) Vec3 {
 	return Add(v1.Scale(1-t), v2.Scale(t))
 }
 
-func lerp(nx, ny, ns int, seed int64) []string {
-	rand.Seed(seed)
-
+func lerp(nx, ny, ns int) []string {
 	result := []string{"P3", fmt.Sprintf("%d %d", nx, ny), "255"}
 
 	s1 := NewSphere(0, 0, -1, 0.5)
