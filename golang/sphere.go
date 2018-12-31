@@ -5,6 +5,7 @@ import "math"
 type Sphere struct {
 	Center Vec3
 	Radius float64
+	Material
 }
 
 func (s *Sphere) Hit(r Ray, tmin float64, tmax float64) (bool, HitRecord) {
@@ -21,7 +22,7 @@ func (s *Sphere) Hit(r Ray, tmin float64, tmax float64) (bool, HitRecord) {
 			t := candidate1
 			p := r.PointAt(candidate1)
 			n := p.Sub(s.Center).Shrink(s.Radius)
-			return true, HitRecord{At: t, Point: p, Normal: n}
+			return true, HitRecord{At: t, Point: p, Normal: n, Material: s.Material}
 		}
 
 		candidate2 := (-b + math.Sqrt(discriminant)) / a
@@ -30,13 +31,13 @@ func (s *Sphere) Hit(r Ray, tmin float64, tmax float64) (bool, HitRecord) {
 			t := candidate2
 			p := r.PointAt(candidate2)
 			n := p.Sub(s.Center).Shrink(s.Radius)
-			return true, HitRecord{At: t, Point: p, Normal: n}
+			return true, HitRecord{At: t, Point: p, Normal: n, Material: s.Material}
 		}
 	}
 
 	return false, HitRecord{}
 }
 
-func NewSphere(x, y, z, r float64) *Sphere {
-	return &Sphere{Center: Vec3{X: x, Y: y, Z: z}, Radius: r}
+func NewSphere(x, y, z, r float64, m Material) *Sphere {
+	return &Sphere{Center: Vec3{X: x, Y: y, Z: z}, Radius: r, Material: m}
 }

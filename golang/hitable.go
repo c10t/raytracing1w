@@ -3,6 +3,7 @@ package main
 type HitRecord struct {
 	At            float64
 	Point, Normal Vec3
+	Material
 }
 
 type Hitable interface {

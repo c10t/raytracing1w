@@ -5,8 +5,8 @@ import (
 )
 
 func TestHitTheWorldWithSphere(t *testing.T) {
-	s1 := NewSphere(1, 0, 0, 1)
-	s2 := NewSphere(0, 1, 0, 1)
+	s1 := NewSphere(1, 0, 0, 1, Metal{Albedo: Vec3{0, 0, 0}})
+	s2 := NewSphere(0, 1, 0, 1, Metal{Albedo: Vec3{0, 0, 0}})
 	w := World{s1, s2}
 	r := Ray{Origin: Vec3{2, -1, 0}, Direction: Vec3{-1, 1, 0}}
 	hit, rec := w.Hit(r, 0, 9999)

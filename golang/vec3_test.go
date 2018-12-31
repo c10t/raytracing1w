@@ -77,6 +77,14 @@ func TestSubMethod(t *testing.T) {
 	}
 }
 
+func TestMulMethod(t *testing.T) {
+	v := Vec3{X: -1.5, Y: 0.2, Z: 1}
+	w := v.Mul(Vec3{-2, -10, 0})
+	if w.X != 3 || w.Y != -2 || w.Z != 0 {
+		t.Fatalf("(-1.5,0.2,1) * (-2,-10,0) != (3,-2,0): (%v,%v,%v)", w.X, w.Y, w.Z)
+	}
+}
+
 func TestDot(t *testing.T) {
 	v := Vec3{X: -1, Y: 2, Z: 3}
 	w := Vec3{X: 4, Y: 5, Z: 0}
