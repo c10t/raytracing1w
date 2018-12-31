@@ -31,7 +31,7 @@ func main() {
 	writer.Flush()
 }
 
-func randomInUnitSphere() Vec3 {
+func RandomInUnitSphere() Vec3 {
 	var p = Vec3{1, 1, 1}
 	for p.SquaredLength() >= 1.0 {
 		p.X = 2*rand.Float64() - 1
@@ -42,12 +42,15 @@ func randomInUnitSphere() Vec3 {
 	return p
 }
 
-func color(r *Ray, w *World) Vec3 {
+func color(r *Ray, w *World, depth int) Vec3 {
 	hit, rec := w.Hit(*r, 0.001, math.MaxFloat64)
 	if hit {
-		target := Add(rec.Point, rec.Normal).Add(randomInUnitSphere())
-		newray := Ray{Origin: rec.Point, Direction: target.Sub(rec.Point)}
-		return color(&newray, w).Scale(0.5)
+		isScattered, attenuation, scatteredRay := rec.Material.Scatter(*r, rec)
+		if depth < 50 && isScattered {
+			return color(&scatteredRay, w, depth+1).Mul(attenuation)
+		} else {
+			return Vec3{0, 0, 0}
+		}
 	}
 
 	unitDirection := r.Direction.UnitVector()
@@ -60,9 +63,11 @@ func color(r *Ray, w *World) Vec3 {
 func lerp(nx, ny, ns int) []string {
 	result := []string{"P3", fmt.Sprintf("%d %d", nx, ny), "255"}
 
-	s1 := NewSphere(0, 0, -1, 0.5)
-	s2 := NewSphere(0, -100.5, -1, 100)
-	world := World{s1, s2}
+	s1 := NewSphere(0, 0, -1, 0.5, Lambertian{Albedo: Vec3{0.8, 0.3, 0.3}})
+	s2 := NewSphere(0, -100.5, -1, 100, Lambertian{Albedo: Vec3{0.8, 0.8, 0.0}})
+	s3 := NewSphere(1, 0, -1, 0.5, Metal{Albedo: Vec3{0.8, 0.6, 0.2}})
+	s4 := NewSphere(-1, 0, -1, 0.5, Metal{Albedo: Vec3{0.8, 0.8, 0.8}})
+	world := World{s1, s2, s3, s4}
 
 	cam := NewCamera()
 
@@ -73,7 +78,7 @@ func lerp(nx, ny, ns int) []string {
 				u := (float64(i) + rand.Float64()) / float64(nx)
 				v := (float64(j) + rand.Float64()) / float64(ny)
 				r := cam.GetRay(u, v)
-				col = col.Add(color(&r, &world))
+				col = col.Add(color(&r, &world, 0))
 			}
 			col = col.Shrink(float64(ns))
 

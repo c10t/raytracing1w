@@ -5,7 +5,7 @@ import (
 )
 
 func TestHitAtTwoPoint(t *testing.T) {
-	s := NewSphere(0, 0, 0, 1)
+	s := NewSphere(0, 0, 0, 1, Metal{Albedo: Vec3{0, 0, 0}})
 	r := Ray{Origin: Vec3{0.5, 0, -10}, Direction: Vec3{0, 0, 1}}
 	isHit, rec := s.Hit(r, 0, 99999)
 	if !isHit {
@@ -23,7 +23,7 @@ func TestHitAtTwoPoint(t *testing.T) {
 }
 
 func TestHitAtOnePoint(t *testing.T) {
-	s := NewSphere(0, 0, 0, 1)
+	s := NewSphere(0, 0, 0, 1, Metal{Albedo: Vec3{0, 0, 0}})
 	r := Ray{Origin: Vec3{0, 0.5, 0}, Direction: Vec3{0, 0, 1}}
 	isHit, rec := s.Hit(r, 0, 99999)
 	if !isHit {
@@ -41,7 +41,7 @@ func TestHitAtOnePoint(t *testing.T) {
 }
 
 func TestNoHitOnBoundary(t *testing.T) {
-	s := NewSphere(0, 0, 0, 1)
+	s := NewSphere(0, 0, 0, 1, Metal{Albedo: Vec3{0, 0, 0}})
 	r := Ray{Origin: Vec3{0, 1, -10}, Direction: Vec3{0, 0, 1}}
 	isHit, _ := s.Hit(r, 0, 99999)
 	if isHit {
