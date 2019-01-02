@@ -65,8 +65,8 @@ func lerp(nx, ny, ns int) []string {
 
 	s1 := NewSphere(0, 0, -1, 0.5, Lambertian{Albedo: Vec3{0.8, 0.3, 0.3}})
 	s2 := NewSphere(0, -100.5, -1, 100, Lambertian{Albedo: Vec3{0.8, 0.8, 0.0}})
-	s3 := NewSphere(1, 0, -1, 0.5, Metal{Albedo: Vec3{0.8, 0.6, 0.2}})
-	s4 := NewSphere(-1, 0, -1, 0.5, Metal{Albedo: Vec3{0.8, 0.8, 0.8}})
+	s3 := NewSphere(1, 0, -1, 0.5, Metal{Albedo: Vec3{0.8, 0.6, 0.2}, fuzz: 0.3})
+	s4 := NewSphere(-1, 0, -1, 0.5, Metal{Albedo: Vec3{0.8, 0.8, 0.8}, fuzz: 1.0})
 	world := World{s1, s2, s3, s4}
 
 	cam := NewCamera()
