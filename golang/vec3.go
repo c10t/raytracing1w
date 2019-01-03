@@ -20,11 +20,11 @@ func (v Vec3) UnitVector() Vec3 {
 	return v.Shrink(v.Length())
 }
 
-func Add(v Vec3, w Vec3) Vec3 {
+func Add(v, w Vec3) Vec3 {
 	return Vec3{v.X + w.X, v.Y + w.Y, v.Z + w.Z}
 }
 
-func Sub(v Vec3, w Vec3) Vec3 {
+func Sub(v, w Vec3) Vec3 {
 	return Vec3{v.X - w.X, v.Y - w.Y, v.Z - w.Z}
 }
 
@@ -52,6 +52,13 @@ func (v Vec3) Mul(w Vec3) Vec3 {
 	return Vec3{v.X * w.X, v.Y * w.Y, v.Z * w.Z}
 }
 
-func Dot(v Vec3, w Vec3) float64 {
+func Dot(v, w Vec3) float64 {
 	return v.X*w.X + v.Y*w.Y + v.Z*w.Z
+}
+
+func Cross(v, w Vec3) Vec3 {
+	x := v.Y*w.Z - v.Z*w.Y
+	y := v.Z*w.X - v.X*w.Z
+	z := v.X*w.Y - v.Y*w.X
+	return Vec3{X: x, Y: y, Z: z}
 }
