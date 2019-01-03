@@ -63,21 +63,17 @@ func color(r *Ray, w *World, depth int) Vec3 {
 func lerp(nx, ny, ns int) []string {
 	result := []string{"P3", fmt.Sprintf("%d %d", nx, ny), "255"}
 
-	/*
-		s1 := NewSphere(0, 0, -1, 0.5, Lambertian{Albedo: Vec3{0.1, 0.2, 0.5}})
-		s2 := NewSphere(0, -100.5, -1, 100, Lambertian{Albedo: Vec3{0.8, 0.8, 0.0}})
-		s3 := NewSphere(1, 0, -1, 0.5, NewMetal(Vec3{0.8, 0.6, 0.2}, 0.1))
-		s4 := NewSphere(-1, 0, -1, 0.5, Dielectric{refractiveIndex: 1.5})
-		s5 := NewSphere(-1, 0, -1, -0.45, Dielectric{refractiveIndex: 1.5})
-		world := World{s1, s2, s3, s4, s5}
-	*/
+	s1 := NewSphere(0, 0, -1, 0.5, Lambertian{Albedo: Vec3{0.1, 0.2, 0.5}})
+	s2 := NewSphere(0, -100.5, -1, 100, Lambertian{Albedo: Vec3{0.8, 0.8, 0.0}})
+	s3 := NewSphere(1, 0, -1, 0.5, NewMetal(Vec3{0.8, 0.6, 0.2}, 0.1))
+	s4 := NewSphere(-1, 0, -1, 0.5, Dielectric{refractiveIndex: 1.5})
+	s5 := NewSphere(-1, 0, -1, -0.45, Dielectric{refractiveIndex: 1.5})
+	world := World{s1, s2, s3, s4, s5}
 
-	rad := math.Cos(math.Pi / 4)
-	s1 := NewSphere(-rad, 0, -1, rad, Lambertian{Albedo: Vec3{0, 0, 1}})
-	s2 := NewSphere(rad, 0, -1, rad, Lambertian{Albedo: Vec3{1, 0, 0}})
-	world := World{s1, s2}
-
-	cam := NewVerticalCamera(90, float64(nx)/float64(ny))
+	lookF := Vec3{-2, 2, 1}
+	lookA := Vec3{0, 0, -1}
+	vup := Vec3{0, 1, 0}
+	cam := NewVerticalCamera(lookF, lookA, vup, 90, float64(nx)/float64(ny))
 
 	for j := ny - 1; j > -1; j-- {
 		for i := 0; i < nx; i++ {
