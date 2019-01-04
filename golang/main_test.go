@@ -32,3 +32,17 @@ func TestColor(t *testing.T) {
 		t.Fatalf("color seems strange: (%v, %v, %v)", c.X, c.Y, c.Z)
 	}
 }
+
+func BenchmarkMakeTheWorld(b *testing.B) {
+	b.ResetTimer()
+	for n := 0; n < b.N; n++ {
+		makeTheWorld()
+	}
+}
+
+func BenchmarkLerp(b *testing.B) {
+	b.ResetTimer()
+	for n := 0; n < b.N; n++ {
+		lerp(200, 100, 100)
+	}
+}
