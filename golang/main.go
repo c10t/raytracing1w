@@ -103,11 +103,11 @@ func lerp(nx, ny, ns int) []string {
 }
 
 func makeTheWorld() World {
-	var spheres []Hitable
+	spheres := make([]Hitable, 500)
 
-	s0 := NewSphere(0, -1000, 0, 1000, Lambertian{Albedo: Vec3{0.5, 0.5, 0.5}})
-	spheres = append(spheres, s0)
+	spheres[0] = NewSphere(0, -1000, 0, 1000, Lambertian{Albedo: Vec3{0.5, 0.5, 0.5}})
 
+	idx := 1
 	for a := -11; a < 11; a++ {
 		for b := -11; b < 11; b++ {
 			center := Vec3{
@@ -117,14 +117,18 @@ func makeTheWorld() World {
 			}
 			if center.Sub(Vec3{4, 0.2, 0}).Length() > 0.9 {
 				m := createMaterial(rand.Float64())
-				spheres = append(spheres, NewSphere(center.X, center.Y, center.Z, 0.2, m))
+				spheres[idx] = NewSphere(center.X, center.Y, center.Z, 0.2, m)
+				idx++
 			}
 		}
 	}
 
-	spheres = append(spheres, NewSphere(0, 1, 0, 1.0, Dielectric{refractiveIndex: 1.5}))
-	spheres = append(spheres, NewSphere(-4, 1, 0, 1.0, Lambertian{Albedo: Vec3{0.4, 0.2, 0.1}}))
-	spheres = append(spheres, NewSphere(4, 1, 0, 1.0, Metal{Vec3{0.7, 0.6, 0.5}, 0.0}))
+	spheres[idx] = NewSphere(0, 1, 0, 1.0, Dielectric{refractiveIndex: 1.5})
+	idx++
+	spheres[idx] = NewSphere(-4, 1, 0, 1.0, Lambertian{Albedo: Vec3{0.4, 0.2, 0.1}})
+	idx++
+	spheres[idx] = NewSphere(4, 1, 0, 1.0, Metal{Vec3{0.7, 0.6, 0.5}, 0.0})
+	idx++
 
 	return spheres
 }
