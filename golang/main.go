@@ -70,10 +70,13 @@ func lerp(nx, ny, ns int) []string {
 	s5 := NewSphere(-1, 0, -1, -0.45, Dielectric{refractiveIndex: 1.5})
 	world := World{s1, s2, s3, s4, s5}
 
-	lookF := Vec3{-2, 2, 1}
+	lookF := Vec3{3, 3, 2}
 	lookA := Vec3{0, 0, -1}
+	distToFocus := Sub(lookF, lookA).Length()
+	aperture := 2.0
+
 	vup := Vec3{0, 1, 0}
-	cam := NewVerticalCamera(lookF, lookA, vup, 90, float64(nx)/float64(ny))
+	cam := NewVerticalCamera(lookF, lookA, vup, 20, float64(nx)/float64(ny), aperture, distToFocus)
 
 	for j := ny - 1; j > -1; j-- {
 		for i := 0; i < nx; i++ {
