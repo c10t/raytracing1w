@@ -63,20 +63,23 @@ func color(r *Ray, w *World, depth int) Vec3 {
 func lerp(nx, ny, ns int) []string {
 	result := []string{"P3", fmt.Sprintf("%d %d", nx, ny), "255"}
 
-	s1 := NewSphere(0, 0, -1, 0.5, Lambertian{Albedo: Vec3{0.1, 0.2, 0.5}})
-	s2 := NewSphere(0, -100.5, -1, 100, Lambertian{Albedo: Vec3{0.8, 0.8, 0.0}})
-	s3 := NewSphere(1, 0, -1, 0.5, NewMetal(Vec3{0.8, 0.6, 0.2}, 0.1))
-	s4 := NewSphere(-1, 0, -1, 0.5, Dielectric{refractiveIndex: 1.5})
-	s5 := NewSphere(-1, 0, -1, -0.45, Dielectric{refractiveIndex: 1.5})
-	world := World{s1, s2, s3, s4, s5}
+	/*
+		s1 := NewSphere(0, 0, -1, 0.5, Lambertian{Albedo: Vec3{0.1, 0.2, 0.5}})
+		s2 := NewSphere(0, -100.5, -1, 100, Lambertian{Albedo: Vec3{0.8, 0.8, 0.0}})
+		s3 := NewSphere(1, 0, -1, 0.5, NewMetal(Vec3{0.8, 0.6, 0.2}, 0.1))
+		s4 := NewSphere(-1, 0, -1, 0.5, Dielectric{refractiveIndex: 1.5})
+		s5 := NewSphere(-1, 0, -1, -0.45, Dielectric{refractiveIndex: 1.5})
+		world := World{s1, s2, s3, s4, s5}
+	*/
 
-	lookF := Vec3{3, 3, 2}
+	world := makeTheWorld()
+	lookF := Vec3{3, 1, 2}
 	lookA := Vec3{0, 0, -1}
 	distToFocus := Sub(lookF, lookA).Length()
-	aperture := 2.0
+	aperture := 0.1
 
 	vup := Vec3{0, 1, 0}
-	cam := NewVerticalCamera(lookF, lookA, vup, 20, float64(nx)/float64(ny), aperture, distToFocus)
+	cam := NewVerticalCamera(lookF, lookA, vup, 90, float64(nx)/float64(ny), aperture, distToFocus)
 
 	for j := ny - 1; j > -1; j-- {
 		for i := 0; i < nx; i++ {
@@ -97,4 +100,52 @@ func lerp(nx, ny, ns int) []string {
 	}
 
 	return result
+}
+
+func makeTheWorld() World {
+	var spheres []Hitable
+
+	s0 := NewSphere(0, -1000, 0, 1000, Lambertian{Albedo: Vec3{0.5, 0.5, 0.5}})
+	spheres = append(spheres, s0)
+
+	for a := -11; a < 11; a++ {
+		for b := -11; b < 11; b++ {
+			center := Vec3{
+				X: float64(a) + 0.9*rand.Float64(),
+				Y: 0.2,
+				Z: float64(b) + 0.9*rand.Float64(),
+			}
+			if center.Sub(Vec3{4, 0.2, 0}).Length() > 0.9 {
+				m := createMaterial(rand.Float64())
+				spheres = append(spheres, NewSphere(center.X, center.Y, center.Z, 0.2, m))
+			}
+		}
+	}
+
+	spheres = append(spheres, NewSphere(0, 1, 0, 1.0, Dielectric{refractiveIndex: 1.5}))
+	spheres = append(spheres, NewSphere(-4, 1, 0, 1.0, Lambertian{Albedo: Vec3{0.4, 0.2, 0.1}}))
+	spheres = append(spheres, NewSphere(4, 1, 0, 1.0, Metal{Vec3{0.7, 0.6, 0.5}, 0.0}))
+
+	return spheres
+}
+
+func createMaterial(factor float64) Material {
+	switch {
+	case factor < 0.8:
+		albedo := Vec3{
+			X: rand.Float64() * rand.Float64(),
+			Y: rand.Float64() * rand.Float64(),
+			Z: rand.Float64() * rand.Float64(),
+		}
+		return Lambertian{Albedo: albedo}
+	case factor < 0.95:
+		albedo := Vec3{
+			X: 0.5 * (1 + rand.Float64()),
+			Y: 0.5 * (1 + rand.Float64()),
+			Z: 0.5 * (1 + rand.Float64()),
+		}
+		return Metal{Albedo: albedo, fuzz: 0.5 * rand.Float64()}
+	default:
+		return Dielectric{refractiveIndex: 1.5}
+	}
 }
