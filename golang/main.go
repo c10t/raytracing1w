@@ -7,6 +7,7 @@ import (
 	"math"
 	"math/rand"
 	"os"
+	"sync"
 	"time"
 )
 
@@ -25,10 +26,18 @@ func main() {
 	writer := bufio.NewWriter(file)
 
 	rand.Seed(time.Now().UnixNano())
-	for _, line := range lerp(200, 100, 100) {
+
+	ppm := lerp(200, 100, 100)
+
+	writeStart := time.Now()
+	for _, line := range ppm {
 		writer.WriteString(line + "\n")
 	}
 	writer.Flush()
+
+	end := time.Now()
+	log.Println(fmt.Sprintf("Write: %v sec", end.Sub(writeStart).Seconds()))
+	log.Println(fmt.Sprintf("Total: %v sec", end.Sub(t).Seconds()))
 }
 
 func RandomInUnitSphere() Vec3 {
@@ -61,7 +70,10 @@ func color(r *Ray, w *World, depth int) Vec3 {
 }
 
 func lerp(nx, ny, ns int) []string {
-	result := []string{"P3", fmt.Sprintf("%d %d", nx, ny), "255"}
+	result := make([]string, nx*ny+3)
+	result[0] = "P3"
+	result[1] = fmt.Sprintf("%d %d", nx, ny)
+	result[2] = "255"
 
 	/*
 		s1 := NewSphere(0, 0, -1, 0.5, Lambertian{Albedo: Vec3{0.1, 0.2, 0.5}})
@@ -81,25 +93,44 @@ func lerp(nx, ny, ns int) []string {
 	vup := Vec3{0, 1, 0}
 	cam := NewVerticalCamera(lookF, lookA, vup, 90, float64(nx)/float64(ny), aperture, distToFocus)
 
+	startLoop := time.Now()
+
+	var wg sync.WaitGroup
+
 	for j := ny - 1; j > -1; j-- {
 		for i := 0; i < nx; i++ {
-			col := Vec3{0, 0, 0}
-			for s := 0; s < ns; s++ {
-				u := (float64(i) + rand.Float64()) / float64(nx)
-				v := (float64(j) + rand.Float64()) / float64(ny)
-				r := cam.GetRay(u, v)
-				col = col.Add(color(&r, &world, 0))
-			}
-			col = col.Shrink(float64(ns))
-
-			ir := int(255.99 * math.Sqrt(col.X))
-			ig := int(255.99 * math.Sqrt(col.Y))
-			ib := int(255.99 * math.Sqrt(col.Z))
-			result = append(result, fmt.Sprintf("%d %d %d", ir, ig, ib))
+			wg.Add(1)
+			go func(i, j int) {
+				defer wg.Done()
+				colorAtPoint(result, nx, ny, ns, i, j, cam, &world)
+			}(i, j)
 		}
 	}
 
+	wg.Wait()
+	endLoop := time.Now()
+	timeForLoop := endLoop.Sub(startLoop).Seconds()
+	log.Println(fmt.Sprintf("lerp loop takes %v second", timeForLoop))
+
 	return result
+}
+
+func colorAtPoint(ppm []string, nx, ny, ns, i, j int, cam *Camera, w *World) {
+	col := Vec3{0, 0, 0}
+	for s := 0; s < ns; s++ {
+		u := (float64(i) + rand.Float64()) / float64(nx)
+		v := (float64(j) + rand.Float64()) / float64(ny)
+		r := cam.GetRay(u, v)
+		col = col.Add(color(&r, w, 0))
+	}
+	col = col.Shrink(float64(ns))
+
+	ir := int(255.99 * math.Sqrt(col.X))
+	ig := int(255.99 * math.Sqrt(col.Y))
+	ib := int(255.99 * math.Sqrt(col.Z))
+
+	lineIndex := nx*(ny-1-j) + i + 3
+	ppm[lineIndex] = fmt.Sprintf("%d %d %d", ir, ig, ib)
 }
 
 func makeTheWorld() World {
