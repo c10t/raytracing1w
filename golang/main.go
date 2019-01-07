@@ -91,7 +91,8 @@ func lerp(nx, ny, ns int) []string {
 	aperture := 0.1
 
 	vup := Vec3{0, 1, 0}
-	cam := NewVerticalCamera(lookF, lookA, vup, 90, float64(nx)/float64(ny), aperture, distToFocus)
+	aspect := float64(nx) / float64(ny)
+	cam := NewVerticalCamera(lookF, lookA, vup, 90, aspect, aperture, distToFocus)
 
 	startLoop := time.Now()
 
